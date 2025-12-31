@@ -1,0 +1,83 @@
+/* --- GLOBAL TYPOGRAPHY --- */
+/* Custom Font: Excalifont (Handwritten style) */
+@font-face {
+    font-family: 'Excalifont'; 
+    /* Using 'swap' ensures text is visible immediately, then swaps font when loaded */
+    font-display: swap; 
+    src: url('https://excalidraw.nyc3.cdn.digitaloceanspaces.com/fonts/Excalifont-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    /* The water gradient background for the whole app */
+    background: linear-gradient(135deg, #e0f2fe 0%, #ffffff 100%);
+    min-height: 100vh;
+    margin: 0;
+    color: #1e293b; /* Slate-800 default text color */
+    
+    /* FIX: Prevent horizontal scroll on mobile */
+    overflow-x: hidden; 
+}
+
+/* Force headings to use the Brand Font */
+h1, h2, h3, h4, h5, h6, .brand-font {
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* Special classes for the "Handwritten" look */
+h1.hero-font, .description-font, .description-font h3 {
+    font-family: 'Excalifont', cursive !important; /* Added fallback 'cursive' */
+}
+
+/* Marker Highlight Effect (The blue underline) */
+.marker-highlight {
+    /* Create a gradient: top half transparent, bottom half blue */
+    background-image: linear-gradient(180deg, transparent 50%, #dbeafe 50%);
+    color: #2363eb !important;
+    display: inline;
+    padding: 0 4px;
+    text-decoration: none !important;
+    border-radius: 2px;
+}
+
+/* --- GLOBAL ANIMATIONS --- */
+.animate-fade-in {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Subtle Water-Drop Animation for the Hero Icon */
+@keyframes float {
+    0% { transform: translateY(0px) rotate(-6deg); }
+    50% { transform: translateY(-10px) rotate(-6deg); }
+    100% { transform: translateY(0px) rotate(-6deg); }
+}
+
+.floating-icon {
+    animation: float 4s ease-in-out infinite;
+}
+
+/* The Wireframe Dot Pattern */
+.hero-pattern {
+    background-color: #ffffff;
+    background-image: radial-gradient(#3b82f6 0.8px, transparent 0.8px);
+    background-size: 20px 20px;
+}
+
+/* Custom Scrollbar for a Modern Look */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+    background: #3b82f6;
+    border-radius: 10px;
+}
