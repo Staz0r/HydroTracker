@@ -34,9 +34,11 @@ $footer_path = ROOT_PATH . '/includes/footer.php';
                 <a href="login.php?mode=register" class="px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold text-lg hover:scale-105 transition-transform shadow-xl shadow-blue-200">
                     Start Tracking Free
                 </a>
-                <button class="px-8 py-4 bg-white border border-slate-200 rounded-2xl font-bold text-lg hover:bg-slate-50 transition">
+                <a href="about.php" 
+                   class="group px-8 py-4 bg-white border border-slate-200 rounded-2xl font-bold text-lg text-slate-600 hover:text-blue-600 hover:border-blue-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center">
                     Learn More
-                </button>
+                    <i class="fa-solid fa-arrow-right w-0 overflow-hidden opacity-0 group-hover:w-4 group-hover:opacity-100 group-hover:ml-2 transition-all duration-300"></i>
+                </a>
             </div>
         </div>
 
@@ -53,7 +55,7 @@ $footer_path = ROOT_PATH . '/includes/footer.php';
 
     <section id="features" class="py-24 bg-white">
         <div class="max-w-7xl mx-auto px-6 text-center">
-            <h2 class="brand-font text-3xl mb-4">Why <span class="font-bold text-blue-500">HydroTracker?</span></h2>
+            <h2 class="brand-font text-slate-800 font-bold text-3xl mb-4">Why <span class="text-blue-500">HydroTracker?</span></h2>
             <p class="description-font text-slate-400 mb-16">We gamify the process of tracking water to keep users motivated.</p>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -64,12 +66,12 @@ $footer_path = ROOT_PATH . '/includes/footer.php';
                     ['icon' => 'fa-ranking-star', 'title' => 'Leaderboard & Stats', 'desc' => 'Compete with others in your journey to maximize the path of water.']
                 ];
                 foreach ($features as $f): ?>
-                <div class="group description-font p-10 rounded-[2.5rem] bg-slate-50 border border-transparent hover:border-blue-200 hover:bg-white transition-all duration-300">
+                <div class="group p-10 rounded-[2.5rem] bg-slate-50 border border-transparent hover:border-blue-200 hover:bg-white transition-all duration-300">
                     <div class="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-6 mx-auto group-hover:bg-blue-600 transition-colors">
                         <i class="fa-solid <?= $f['icon'] ?> text-blue-500 text-2xl group-hover:text-white"></i>
                     </div>
-                    <h3 class="text-xl mb-3"><?= $f['title'] ?></h3>
-                    <p class="text-slate-500 leading-relaxed"><?= $f['desc'] ?></p>
+                    <h3 class="brand-font font-bold text-xl mb-3"><?= $f['title'] ?></h3>
+                    <p class="description-font text-slate-500 leading-relaxed"><?= $f['desc'] ?></p>
                 </div>
                 <?php endforeach; ?>
             </div>

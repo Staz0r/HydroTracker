@@ -19,18 +19,21 @@ $position_class = ($current_page === 'dashboard.php') ? 'relative' : 'sticky top
 
     <div class="hidden md:flex gap-8 items-center font-medium text-slate-600">
         <?php if (!isset($_SESSION['user_id'])): ?>
-            <a href="<?php echo BASE_URL; ?>/index.php#features" class="hover:text-blue-600 transition">Features</a>
-            <a href="<?php echo BASE_URL; ?>/index.php#about" class="hover:text-blue-600 transition">About</a>
+            <a href="<?php echo BASE_URL; ?>/index.php#features" class="<?php echo (basename($_SERVER['PHP_SELF']) == 'index.php#features') ? 'font-bold text-blue-600' : 'hover:text-blue-600'; ?> transition"">Features</a>
+            <a href="<?php echo BASE_URL; ?>/about.php" class="<?php echo (basename($_SERVER['PHP_SELF']) == 'about.php') ? 'font-bold text-blue-600' : 'hover:text-blue-600'; ?> transition">About</a>
+
+            <div>
 
             <a href="<?php echo $login_page; ?>?mode=login"
-                class="px-5 py-2.5 rounded-xl border border-blue-600 text-blue-600 hover:bg-blue-50 transition">
+                class="px-5 py-2.5 mr-2 rounded-xl border border-blue-600 text-blue-600 hover:bg-blue-50 transition">
                 Sign In
             </a>
 
             <a href="<?php echo $login_page; ?>?mode=register"
-                class="px-5 py-2.5 rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-200 hover:bg-blue-700 transition">
+                class="px-5 py-2.5 ml-2 rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-200 hover:bg-blue-700 transition">
                 Sign Up
             </a>
+            </div>
 
         <?php elseif (isset($_SESSION['user_id'])): ?>
             <div class="flex items-center gap-2">

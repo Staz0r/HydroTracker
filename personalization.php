@@ -8,6 +8,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
+$page_title = "Personalize Plan - HydroTracker";
 $footer_padding = 'py-16 pb-0';
 
 $stmt = $conn->prepare("SELECT daily_goal FROM users WHERE user_id = ?");

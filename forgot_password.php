@@ -5,6 +5,8 @@ $step = 1;
 $error = '';
 $success = '';
 
+$page_title = 'Forgot Password - HydroTracker';
+
 // Handle Form Submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
