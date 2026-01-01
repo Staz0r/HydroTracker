@@ -36,7 +36,7 @@ $page_title = "Personalize Plan - HydroTracker";
         
         <div class="bg-blue-600 p-8 text-center">
             <h1 class="font-hand text-3xl text-white font-bold mb-2">Let's get to know you</h1>
-            <p class="text-blue-100 text-sm">We'll customize your hydration plan based on this.</p>
+            <p class="description-font text-blue-100 text-sm">We'll customize your hydration plan based on this.</p>
         </div>
 
         <form action="actions/save_personalization.php" method="POST" class="p-8 space-y-6">

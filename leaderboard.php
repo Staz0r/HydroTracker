@@ -43,7 +43,7 @@ if ($stmt = $conn->prepare($sql)) {
         
         <div class="text-center mb-8">
             <h1 class="text-3xl font-bold text-slate-800 brand-font">Today's Top Hydrators</h1>
-            <p class="text-slate-400 text-sm mt-1">Who is hitting their goals today?</p>
+            <p class="description-font text-slate-400 text-sm mt-1">Who is hitting their goals today?</p>
         </div>
 
         <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">

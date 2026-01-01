@@ -11,14 +11,19 @@ $user_id = $_SESSION['user_id'];
 
 $footer_padding = 'py-16 pb-0';
 
-// 1. Fetch Current Settings
+// Fetch user's current settings
 $user = null;
-$stmt = $conn->prepare("SELECT username, email, weight, activity_level, reminder_frequency, daily_goal FROM users WHERE user_id = ?");
+$stmt = $conn->prepare("SELECT username, email, weight, activity_level, reminder_frequency, daily_goal, sip_size, gulp_size FROM users WHERE user_id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 $stmt->close();
+
+if (!$user['sip_size'])
+    $user['sip_size'] = 100;
+if (!$user['gulp_size'])
+    $user['gulp_size'] = 250;
 ?>
 
 <!DOCTYPE html>
@@ -187,6 +192,34 @@ $stmt->close();
                         </button>
                     </div>
                     <p class="text-xs text-slate-400 mt-2">Click Recalculate to update goal based on new weight.</p>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-slate-100">
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Custom Drink Sizes</h3>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-slate-700 font-bold mb-2 text-xs">Sip Button (ml)</label>
+                            <div class="relative">
+                                <i
+                                    class="fa-solid fa-droplet absolute left-4 top-1/2 -translate-y-1/2 text-blue-400"></i>
+                                <input type="number" name="sip_size" required value="<?php echo $user['sip_size']; ?>"
+                                    class="w-full pl-10 pr-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 font-bold focus:outline-none focus:border-blue-500">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-slate-700 font-bold mb-2 text-xs">Gulp Button (ml)</label>
+                            <div class="relative">
+                                <i
+                                    class="fa-solid fa-glass-water absolute left-4 top-1/2 -translate-y-1/2 text-blue-500"></i>
+                                <input type="number" name="gulp_size" required value="<?php echo $user['gulp_size']; ?>"
+                                    class="w-full pl-10 pr-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 font-bold focus:outline-none focus:border-blue-500">
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-2">Customize how much water is added when you click the
+                        buttons on the dashboard.</p>
                 </div>
 
             </div>
