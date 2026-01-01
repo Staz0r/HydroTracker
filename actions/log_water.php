@@ -1,6 +1,6 @@
 <?php
-require_once '../config/init.php';
-require_once '../includes/hydration_utils.php';
+require_once ROOT_PATH . '/config/init.php';
+require_once ROOT_PATH . '/includes/hydration_utils.php';
 
 header('Content-Type: application/json');
 

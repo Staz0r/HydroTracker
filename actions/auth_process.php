@@ -15,16 +15,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // ==========================================
     if ($form_type === 'login') {
         
-        $email = trim($_POST["email"]);
+        // We now look for 'identifier' instead of 'email'
+        $identifier = trim($_POST["identifier"]);
         $password = trim($_POST["password"]);
         
-        // Save old input
-        $_SESSION['old']['login_email'] = $email;
+        $_SESSION['old']['login_id'] = $identifier;
 
-        // Validation
         $has_error = false;
-        if (empty($email)) {
-            $_SESSION['errors']['login_email'] = "Please enter your email.";
+        if (empty($identifier)) {
+            $_SESSION['errors']['login_id'] = "Please enter your email or username.";
             $has_error = true;
         }
         if (empty($password)) {
@@ -37,46 +36,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit;
         }
 
-        // Database Check
-        $sql = "SELECT user_id, username, password, daily_goal FROM users WHERE email = ?";
+        // UPDATED SQL: Check if identifier matches Email OR Username
+        $sql = "SELECT user_id, username, password, daily_goal FROM users WHERE email = ? OR username = ?";
         
         if ($stmt = mysqli_prepare($conn, $sql)) {
-            mysqli_stmt_bind_param($stmt, "s", $param_email);
-            $param_email = $email;
+            // We bind the same variable twice ($identifier, $identifier)
+            mysqli_stmt_bind_param($stmt, "ss", $identifier, $identifier);
             
             if (mysqli_stmt_execute($stmt)) {
                 mysqli_stmt_store_result($stmt);
                 
-                // Check if email exists
                 if (mysqli_stmt_num_rows($stmt) == 1) {
                     mysqli_stmt_bind_result($stmt, $user_id, $username, $hashed_password, $daily_goal);
                     if (mysqli_stmt_fetch($stmt)) {
-                        // Verify Password
                         if (password_verify($password, $hashed_password)) {
-                            // SUCCESS: Start Session
+                            // SUCCESS
                             $_SESSION["user_id"] = $user_id;
                             $_SESSION["username"] = $username;
                             
-                            // Clear temp session data
                             unset($_SESSION['errors']);
                             unset($_SESSION['old']);
 
-                            // ROUTING LOGIC (Fixed)
-                            // We use the $daily_goal variable we just fetched from bind_result
+                            // Gatekeeper Logic
                             if ($daily_goal > 0) {
-                                // User has already personalized -> Go to Dashboard
                                 header("Location: ../dashboard.php");
                             } else {
-                                // Goal is 0 (New User) -> Go to Personalization
                                 header("Location: ../personalization.php");
                             }
                             exit();
                         } else {
-                            $_SESSION['errors']['login_err'] = "Invalid email or password.";
+                            $_SESSION['errors']['login_err'] = "Invalid credentials.";
                         }
                     }
                 } else {
-                    $_SESSION['errors']['login_err'] = "Invalid email or password.";
+                    $_SESSION['errors']['login_err'] = "Invalid credentials.";
                 }
             } else {
                 $_SESSION['errors']['login_err'] = "Oops! Something went wrong.";
@@ -84,10 +77,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             mysqli_stmt_close($stmt);
         }
         
-        // If failed, redirect back
         header("location: " . BASE_URL . "/login.php?mode=login");
         exit;
-    } 
+    }
 
     // ==========================================
     // REGISTER LOGIC
