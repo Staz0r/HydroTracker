@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // Database Check
-        $sql = "SELECT user_id, username, email, password FROM users WHERE email = ?";
+        $sql = "SELECT user_id, username, password, daily_goal FROM users WHERE email = ?";
         
         if ($stmt = mysqli_prepare($conn, $sql)) {
             mysqli_stmt_bind_param($stmt, "s", $param_email);
@@ -57,6 +57,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             // SUCCESS: Start Session & Redirect
                             $_SESSION["user_id"] = $user_id;
                             $_SESSION["username"] = $username;
+                            
+                            $daily_goal = intval($user['daily_goal']);
+
+                            if ($daily_goal > 0) {
+                                // User has already personalized -> Go to Dashboard
+                                header("Location: ../dashboard.php");
+                            } else {
+                                // Goal is 0 (New User) -> Go to Personalization
+                                header("Location: ../personalization.php");
+                            }
+                            
+                            exit();
                             
                             // Clear temp session data
                             unset($_SESSION['errors']);

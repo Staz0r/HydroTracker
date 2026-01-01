@@ -5,45 +5,59 @@ $login_page = BASE_URL . "/login.php";
 $position_class = ($current_page === 'dashboard.php') ? 'relative' : 'sticky top-0';
 ?>
 
-<nav class="flex justify-between items-center px-6 md:px-12 py-4 <?php echo $position_class; ?> bg-white/70 backdrop-blur-lg z-50">
-    <div class="flex items-center gap-2">
-        <i class="fa-solid fa-droplet text-blue-500 text-2xl"></i>
-        <span class="brand-font text-xl font-bold text-blue-600 tracking-tight">HydroTracker</span>
+<nav
+    class="flex justify-between items-center px-6 md:px-12 py-4 <?php echo $position_class; ?> bg-white/70 backdrop-blur-lg z-50">
+    <div>
+        <a href="<?php echo BASE_URL; ?>/index.php" class="flex items-center gap-2">
+
+            <i class="fa-solid fa-droplet text-blue-500 text-2xl"></i>
+            <span class="brand-font text-xl font-bold text-blue-600 tracking-tight"> HydroTracker</span>
+
+        </a>
     </div>
 
     <div class="hidden md:flex gap-8 items-center font-medium text-slate-600">
         <?php if (!isset($_SESSION['user_id'])): ?>
-        <a href="<?php echo BASE_URL; ?>/index.php#features" class="hover:text-blue-600 transition">Features</a>
-        <a href="<?php echo BASE_URL; ?>/index.php#about" class="hover:text-blue-600 transition">About</a>
+            <a href="<?php echo BASE_URL; ?>/index.php#features" class="hover:text-blue-600 transition">Features</a>
+            <a href="<?php echo BASE_URL; ?>/index.php#about" class="hover:text-blue-600 transition">About</a>
 
-        <a href="<?php echo $login_page; ?>?mode=login" class="px-5 py-2.5 rounded-xl border border-blue-600 text-blue-600 hover:bg-blue-50 transition">
-            Sign In
-        </a>
-        
-        <a href="<?php echo $login_page; ?>?mode=register" class="px-5 py-2.5 rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-200 hover:bg-blue-700 transition">
-            Sign Up
-        </a>
-        
+            <a href="<?php echo $login_page; ?>?mode=login"
+                class="px-5 py-2.5 rounded-xl border border-blue-600 text-blue-600 hover:bg-blue-50 transition">
+                Sign In
+            </a>
+
+            <a href="<?php echo $login_page; ?>?mode=register"
+                class="px-5 py-2.5 rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-200 hover:bg-blue-700 transition">
+                Sign Up
+            </a>
+
         <?php elseif (isset($_SESSION['user_id'])): ?>
-        <div class="flex items-center gap-4">
-            <a href="<?php echo BASE_URL; ?>/dashboard.php" class="hover:text-blue-600 transition <?php echo ($current_page == 'dashboard.php') ? 'text-blue-600 font-bold' : ''; ?>">
-                <i class="fa-solid fa-chart-pie mr-2 text-blue-500"></i> Dashboard
-            </a>
-            <span class="text-sm text-gray-500 hidden md:inline">Hello, <b><?php echo htmlspecialchars($username); ?></b></span>
-            <a href="<?php echo BASE_URL; ?>/actions/logout.php" class="bg-red-50 text-red-500 px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-100 transition">
-                <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
-            </a>
-        </div>
-            
+            <div class="flex items-center gap-4">
+                <a href="<?php echo BASE_URL; ?>/dashboard.php"
+                    class="p-2 hover:text-blue-600 rounded-full hover:bg-slate-50 transition <?php echo ($current_page == 'dashboard.php') ? 'text-blue-600 font-bold' : ''; ?>">
+                    <i class="fa-solid fa-chart-pie mr-2 text-blue-500"></i> Dashboard
+                </a>
+
+                <a href="settings.php"
+                    class="w-10 h-10 flex items-center justify-center rounded-full text-slate-400 hover:bg-slate-50 hover:text-blue-600 transition">
+                    <i class="fa-solid fa-gear text-lg"></i>
+                </a>
+
+                <span class="text-sm text-gray-500 hidden md:inline">Hello,
+                    <b><?php echo htmlspecialchars($username); ?></b></span>
+            </div>
+
         <?php endif; ?>
     </div>
 
-    <button id="mobile-menu-btn" class="md:hidden text-slate-600 text-2xl focus:outline-none p-2 rounded-lg hover:bg-slate-100 transition">
+    <button id="mobile-menu-btn"
+        class="md:hidden text-slate-600 text-2xl focus:outline-none p-2 rounded-lg hover:bg-slate-100 transition">
         <i class="fa-solid fa-bars"></i>
     </button>
 
-    <div id="mobile-menu" class="hidden absolute top-full left-0 w-full bg-white border-t border-slate-100 shadow-xl p-4 flex flex-col gap-4 md:hidden">
-        
+    <div id="mobile-menu"
+        class="hidden absolute top-full left-0 w-full bg-white border-t border-slate-100 shadow-xl p-4 flex flex-col gap-4 md:hidden">
+
         <?php if (isset($_SESSION['user_id'])): ?>
             <div class="flex items-center gap-3 p-3 bg-blue-50 rounded-xl mb-2">
                 <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-500">
@@ -55,22 +69,27 @@ $position_class = ($current_page === 'dashboard.php') ? 'relative' : 'sticky top
                 </div>
             </div>
 
-            <a href="<?php echo BASE_URL; ?>/dashboard.php" class="block w-full py-3 px-4 rounded-xl hover:bg-slate-50 font-medium <?php echo ($current_page == 'dashboard.php') ? 'text-blue-600 font-bold' : 'text-slate-600'; ?>">
+            <a href="<?php echo BASE_URL; ?>/dashboard.php"
+                class="block w-full py-3 px-4 rounded-xl hover:bg-slate-50 font-medium <?php echo ($current_page == 'dashboard.php') ? 'text-blue-600 font-bold' : 'text-slate-600'; ?>">
                 <i class="fa-solid fa-chart-pie mr-2 text-blue-500"></i> Dashboard
             </a>
 
-            <a href="<?php echo BASE_URL; ?>/actions/logout.php" class="block w-full py-3 px-4 rounded-xl bg-red-50 text-red-500 font-medium text-center">
+
+            <a href="<?php echo BASE_URL; ?>/actions/logout.php"
+                class="block w-full py-3 px-4 rounded-xl bg-red-50 text-red-500 font-medium text-center">
                 <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
             </a>
 
         <?php else: ?>
             <a href="<?php echo BASE_URL; ?>/index.php#features" class="block py-2 text-slate-600 font-medium">Features</a>
-            
+
             <div class="flex flex-col gap-3 mt-2">
-                <a href="<?php echo BASE_URL; ?>/login.php?mode=login" class="w-full text-center py-3 rounded-xl border border-blue-600 text-blue-600 font-bold">
+                <a href="<?php echo BASE_URL; ?>/login.php?mode=login"
+                    class="w-full text-center py-3 rounded-xl border border-blue-600 text-blue-600 font-bold">
                     Sign In
                 </a>
-                <a href="<?php echo BASE_URL; ?>/login.php?mode=register" class="w-full text-center py-3 rounded-xl bg-blue-600 text-white font-bold shadow-lg shadow-blue-200">
+                <a href="<?php echo BASE_URL; ?>/login.php?mode=register"
+                    class="w-full text-center py-3 rounded-xl bg-blue-600 text-white font-bold shadow-lg shadow-blue-200">
                     Sign Up
                 </a>
             </div>
@@ -93,7 +112,7 @@ $position_class = ($current_page === 'dashboard.php') ? 'relative' : 'sticky top
         document.addEventListener('click', (e) => {
             // Check if the menu is currently OPEN
             if (!menu.classList.contains('hidden')) {
-                
+
                 // If the click was NOT inside the menu AND NOT on the button...
                 if (!menu.contains(e.target) && !btn.contains(e.target)) {
                     menu.classList.add('hidden'); // ...then close it.

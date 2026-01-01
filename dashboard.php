@@ -12,6 +12,19 @@ $page_title = "Dashboard - HydroTracker";
 $user_id = $_SESSION['user_id'];
 $daily_goal = 0;
 $username = $_SESSION['username'];
+$reminder_freq = 60; // Default fallback (minutes)
+
+$sql = "SELECT daily_goal, reminder_frequency FROM users WHERE user_id = ?";
+if ($stmt = mysqli_prepare($conn, $sql)) {
+    mysqli_stmt_bind_param($stmt, "i", $user_id);
+    if (mysqli_stmt_execute($stmt)) {
+        mysqli_stmt_bind_result($stmt, $daily_goal, $db_freq);
+        if (mysqli_stmt_fetch($stmt)) {
+            if ($db_freq) $reminder_freq = $db_freq;
+        }
+    }
+    mysqli_stmt_close($stmt);
+}
 
 // Check if date is passed in URL, otherwise use Today
 $url_date = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d');
@@ -108,6 +121,25 @@ $status_msg = get_hydration_message($total_intake, $daily_goal);
 
         <!-- Water bottle -->
         <div class="flex flex-col items-center justify-center py-8">
+
+            <div id="reminder-banner" class="hidden mb-6 bg-orange-500 text-white p-4 rounded-2xl shadow-lg shadow-orange-200 animate-fade-in flex items-center justify-between">
+                
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-bell text-xl"></i>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-bold text-lg leading-tight">Time to hydrate!</h3>
+                        <p class="text-orange-50 text-xs">It's been a while since your last sip.</p>
+                    </div>
+                </div>
+
+
+                <button onclick="dismissReminder()" class="text-white/70 hover:text-white p-2 transition-colors">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
 
             <div id="goal-success-banner"
                 class="<?php echo ($total_intake >= $daily_goal) ? '' : 'hidden'; ?> mb-6 bg-green-500 text-white p-4 rounded-2xl shadow-lg shadow-green-200 animate-fade-in flex items-center justify-between">
