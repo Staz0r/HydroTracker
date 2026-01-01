@@ -20,8 +20,10 @@ $user = $result->fetch_assoc();
 $stmt->close();
 
 // Defaults
-if (!$user['sip_size']) $user['sip_size'] = 100;
-if (!$user['gulp_size']) $user['gulp_size'] = 250;
+if (!$user['sip_size'])
+    $user['sip_size'] = 100;
+if (!$user['gulp_size'])
+    $user['gulp_size'] = 250;
 ?>
 
 <!DOCTYPE html>
@@ -51,12 +53,14 @@ if (!$user['gulp_size']) $user['gulp_size'] = 250;
         </div>
 
         <?php if (isset($_GET['status']) && $_GET['status'] == 'saved'): ?>
-            <div class="mb-6 bg-green-100 border border-green-200 text-green-700 px-4 py-3 rounded-xl flex items-center gap-3 animate-fade-in">
+            <div
+                class="mb-6 bg-green-100 border border-green-200 text-green-700 px-4 py-3 rounded-xl flex items-center gap-3 animate-fade-in">
                 <i class="fa-solid fa-check-circle"></i>
                 <span>Settings saved successfully!</span>
             </div>
         <?php elseif (isset($_GET['error']) && $_GET['error'] == 'username_taken'): ?>
-            <div class="mb-6 bg-red-100 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-center gap-3 animate-fade-in">
+            <div
+                class="mb-6 bg-red-100 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-center gap-3 animate-fade-in">
                 <i class="fa-solid fa-triangle-exclamation"></i>
                 <span>That username is already taken.</span>
             </div>
@@ -71,7 +75,8 @@ if (!$user['gulp_size']) $user['gulp_size'] = 250;
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Username</label>
+                        <label
+                            class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Username</label>
                         <div class="relative">
                             <i class="fa-solid fa-at absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
                             <input type="text" name="username" required
@@ -80,12 +85,14 @@ if (!$user['gulp_size']) $user['gulp_size'] = 250;
                         </div>
                         <p class="text-[10px] text-slate-400 mt-1.5 ml-1">Visible on the leaderboard.</p>
                     </div>
-                    
+
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email</label>
+                        <label
+                            class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email</label>
                         <div class="relative opacity-60">
                             <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                            <div class="w-full pl-10 pr-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-slate-500 font-bold cursor-not-allowed">
+                            <div
+                                class="w-full pl-10 pr-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-slate-500 font-bold cursor-not-allowed">
                                 <?php echo htmlspecialchars($user['email']); ?>
                             </div>
                         </div>
@@ -101,42 +108,72 @@ if (!$user['gulp_size']) $user['gulp_size'] = 250;
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Weight (kg)</label>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Weight
+                            (kg)</label>
                         <div class="relative">
-                            <i class="fa-solid fa-weight-scale absolute left-4 top-1/2 -translate-y-1/2 text-blue-400"></i>
-                            <input type="number" name="weight" id="weight" required 
+                            <i
+                                class="fa-solid fa-weight-scale absolute left-4 top-1/2 -translate-y-1/2 text-blue-400"></i>
+                            <input type="number" name="weight" id="weight" required
                                 value="<?php echo $user['weight']; ?>"
                                 class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 font-bold focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all">
                         </div>
                     </div>
 
                     <div class="relative">
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Reminder Frequency</label>
-                        <input type="hidden" name="reminder" id="reminder_input" value="<?php echo $user['reminder_frequency']; ?>">
-                        
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Reminder
+                            Frequency</label>
+                        <input type="hidden" name="reminder" id="reminder_input"
+                            value="<?php echo $user['reminder_frequency']; ?>">
+
                         <button type="button" onclick="toggleDropdown()"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-left text-slate-700 font-bold focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all flex items-center justify-between group">
                             <span id="reminder_display">
                                 <?php
                                 $freq = $user['reminder_frequency'];
-                                if ($freq == 30) echo "30 Minutes";
-                                elseif ($freq == 60) echo "1 Hour";
-                                elseif ($freq == 120) echo "2 Hours";
-                                elseif ($freq == 180) echo "3 Hours";
-                                else echo "1 Hour";
+                                if ($freq == 30)
+                                    echo "30 Minutes";
+                                elseif ($freq == 60)
+                                    echo "1 Hour";
+                                elseif ($freq == 120)
+                                    echo "2 Hours";
+                                elseif ($freq == 180)
+                                    echo "3 Hours";
+                                else
+                                    echo "1 Hour";
                                 ?>
                             </span>
-                            <i id="dropdown-arrow" class="fa-solid fa-chevron-down text-slate-400 group-hover:text-blue-500 transition-colors"></i>
+                            <i id="dropdown-arrow"
+                                class="fa-solid fa-chevron-down text-slate-400 group-hover:text-blue-500 transition-colors"></i>
                         </button>
 
-                        <div id="reminder_options" class="hidden absolute z-50 mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden animate-fade-in">
+                        <div id="reminder_options"
+                            class="hidden absolute z-50 mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden animate-fade-in">
                             <?php
-                            function renderOption($val, $label, $currentVal) {
+                            function renderOption($val, $label, $currentVal)
+                            {
                                 $isActive = ($val == $currentVal);
-                                $bgClass = $isActive ? 'bg-blue-50 text-blue-600' : 'text-slate-600 hover:bg-slate-50 hover:text-blue-600';
-                                $icon = $isActive ? '<i class="fa-solid fa-check text-blue-500 text-xs"></i>' : '<i class="fa-regular fa-clock text-xs opacity-50"></i>';
-                                echo '<div onclick="selectOption(\'' . $val . '\', \'' . $label . '\')" class="px-4 py-3 font-medium cursor-pointer transition-colors border-b border-gray-50 last:border-0 flex items-center gap-2 ' . $bgClass . '">' . $icon . ' ' . $label . '</div>';
+
+                                // Base classes
+                                $commonClasses = "reminder-option px-4 py-3 font-medium cursor-pointer transition-colors border-b border-gray-50 last:border-0 flex items-center gap-2";
+
+                                // Active vs Inactive styles
+                                $activeClass = "bg-blue-50 text-blue-600";
+                                $inactiveClass = "text-slate-600 hover:bg-slate-50 hover:text-blue-600";
+
+                                $finalClass = $isActive ? "$commonClasses $activeClass" : "$commonClasses $inactiveClass";
+
+                                // Icons
+                                $checkIcon = '<i class="fa-solid fa-check text-blue-500 text-xs"></i>';
+                                $clockIcon = '<i class="fa-regular fa-clock text-xs opacity-50"></i>';
+                                $icon = $isActive ? $checkIcon : $clockIcon;
+
+                                // Note: Added 'this' to onclick
+                                echo '<div onclick="selectOption(\'' . $val . '\', \'' . $label . '\', this)" class="' . $finalClass . '">
+            <span class="icon-wrapper">' . $icon . '</span>
+            ' . $label . '
+          </div>';
                             }
+
                             renderOption(30, '30 Minutes', $user['reminder_frequency']);
                             renderOption(60, '1 Hour', $user['reminder_frequency']);
                             renderOption(120, '2 Hours', $user['reminder_frequency']);
@@ -147,7 +184,8 @@ if (!$user['gulp_size']) $user['gulp_size'] = 250;
                 </div>
 
                 <div class="mb-8">
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Activity Level</label>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Activity
+                        Level</label>
                     <div class="grid grid-cols-3 gap-3">
                         <?php
                         $levels = ['Low', 'Medium', 'High'];
@@ -156,7 +194,8 @@ if (!$user['gulp_size']) $user['gulp_size'] = 250;
                             ?>
                             <label class="cursor-pointer">
                                 <input type="radio" name="activity" value="<?php echo $lvl; ?>" class="peer sr-only" <?php echo $checked; ?>>
-                                <div class="text-center py-3 border-2 border-slate-100 rounded-xl text-slate-500 font-bold hover:border-blue-200 peer-checked:border-blue-500 peer-checked:text-blue-600 peer-checked:bg-blue-50 transition-all">
+                                <div
+                                    class="text-center py-3 border-2 border-slate-100 rounded-xl text-slate-500 font-bold hover:border-blue-200 peer-checked:border-blue-500 peer-checked:text-blue-600 peer-checked:bg-blue-50 transition-all">
                                     <?php echo $lvl; ?>
                                 </div>
                             </label>
@@ -165,7 +204,8 @@ if (!$user['gulp_size']) $user['gulp_size'] = 250;
                 </div>
 
                 <div class="mb-8 pb-8 border-b border-slate-100">
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Daily Goal (ml)</label>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Daily Goal
+                        (ml)</label>
                     <div class="flex gap-4">
                         <div class="relative w-full">
                             <i class="fa-solid fa-bullseye absolute left-4 top-1/2 -translate-y-1/2 text-blue-400"></i>
@@ -187,21 +227,25 @@ if (!$user['gulp_size']) $user['gulp_size'] = 250;
                     <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
                         <i class="fa-solid fa-sliders"></i> Button Customization
                     </h3>
-                    
+
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-2">Sip Button</label>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-2">Sip
+                                Button</label>
                             <div class="relative">
-                                <i class="fa-solid fa-droplet absolute left-4 top-1/2 -translate-y-1/2 text-blue-400"></i>
+                                <i
+                                    class="fa-solid fa-droplet absolute left-4 top-1/2 -translate-y-1/2 text-blue-400"></i>
                                 <input type="number" name="sip_size" required value="<?php echo $user['sip_size']; ?>"
                                     class="w-full pl-10 pr-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 font-bold focus:outline-none focus:border-blue-500 transition-all">
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-2">Gulp Button</label>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-2">Gulp
+                                Button</label>
                             <div class="relative">
-                                <i class="fa-solid fa-glass-water absolute left-4 top-1/2 -translate-y-1/2 text-blue-500"></i>
+                                <i
+                                    class="fa-solid fa-glass-water absolute left-4 top-1/2 -translate-y-1/2 text-blue-500"></i>
                                 <input type="number" name="gulp_size" required value="<?php echo $user['gulp_size']; ?>"
                                     class="w-full pl-10 pr-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 font-bold focus:outline-none focus:border-blue-500 transition-all">
                             </div>
@@ -255,10 +299,10 @@ if (!$user['gulp_size']) $user['gulp_size'] = 250;
             if (goal < 1500) goal = 1500;
 
             const goalInput = document.getElementById('daily_goal');
-            goalInput.style.backgroundColor = '#dbeafe'; 
+            goalInput.style.backgroundColor = '#dbeafe';
             goalInput.value = Math.round(goal);
             setTimeout(() => {
-                goalInput.style.backgroundColor = '#f8fafc'; 
+                goalInput.style.backgroundColor = '#f8fafc';
             }, 300);
         }
 
@@ -275,10 +319,37 @@ if (!$user['gulp_size']) $user['gulp_size'] = 250;
             menu.classList.toggle('hidden');
         }
 
-        function selectOption(value, text) {
+        function selectOption(value, text, clickedElement) {
+            // Update Hidden Input & Display Text
             document.getElementById('reminder_input').value = value;
             document.getElementById('reminder_display').innerText = text;
-            document.getElementById('reminder_options').classList.add('hidden');
+
+            // Reset all option
+            const allOptions = document.querySelectorAll('.reminder-option');
+            const checkIcon = '<i class="fa-solid fa-check text-blue-500 text-xs"></i>';
+            const clockIcon = '<i class="fa-regular fa-clock text-xs opacity-50"></i>';
+
+            allOptions.forEach(option => {
+                const iconWrapper = option.querySelector('.icon-wrapper');
+
+                // Remove Active Styles
+                option.classList.remove('bg-blue-50', 'text-blue-600');
+                // Add Inactive Styles
+                option.classList.add('text-slate-600', 'hover:bg-slate-50', 'hover:text-blue-600');
+                // Reset Icon
+                iconWrapper.innerHTML = clockIcon;
+            });
+
+            // Highlight clicked one
+            // Add Active Styles
+            clickedElement.classList.add('bg-blue-50', 'text-blue-600');
+            // Remove Inactive Styles
+            clickedElement.classList.remove('text-slate-600', 'hover:bg-slate-50', 'hover:text-blue-600');
+            // Set Checkmark Icon
+            clickedElement.querySelector('.icon-wrapper').innerHTML = checkIcon;
+
+            // 4. Close Menu
+            toggleDropdown();
         }
 
         document.addEventListener('click', function (e) {
@@ -290,4 +361,5 @@ if (!$user['gulp_size']) $user['gulp_size'] = 250;
         });
     </script>
 </body>
+
 </html>
