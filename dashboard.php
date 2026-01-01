@@ -271,13 +271,12 @@ $status_msg = get_hydration_message($total_intake, $daily_goal);
 
                 <div class="flex items-center justify-between mb-6 px-4">
 
-                    <a href="dashboard.php?date=<?php echo $prev_date; ?>"
-                        class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-500 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition shadow-sm">
-                        <i class="fa-solid fa-chevron-left"></i>
-                    </a>
+                    <button onclick="changeDate(-1)" class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-500 hover:bg-blue-50 hover:text-blue-600 transition shadow-sm">
+        <i class="fa-solid fa-chevron-left"></i>
+    </button>
 
                     <div class="text-center">
-                        <h3 class="font-hand text-xl text-slate-700 font-bold">
+                        <h3 id="nav-date-display" class="font-hand text-xl text-slate-700 font-bold">
                             <?php
                             if ($is_today) {
                                 echo "Today's Log";
@@ -288,15 +287,14 @@ $status_msg = get_hydration_message($total_intake, $daily_goal);
                             ?>
                         </h3>
                         <?php if (!$is_today): ?>
-                            <span class="text-xs text-slate-400 font-medium uppercase tracking-wider">History View</span>
+                            <span id="nav-history-label" class="text-xs text-slate-400 font-medium uppercase tracking-wider">History View</span>
                         <?php endif; ?>
                     </div>
 
                     <?php if (!$is_today): ?>
-                        <a href="dashboard.php?date=<?php echo $next_date; ?>"
-                            class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-500 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition shadow-sm">
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </a>
+                        <button id="nav-next-btn" onclick="changeDate(1)" class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-500 hover:bg-blue-50 hover:text-blue-600 transition shadow-sm <?php echo $is_today ? 'invisible' : ''; ?>">
+        <i class="fa-solid fa-chevron-right"></i>
+    </button>
                     <?php else: ?>
                         <div class="w-10"></div>
                     <?php endif; ?>
