@@ -168,6 +168,8 @@ function updateDashboardUI(data, dailyGoal) {
         );
         logContainer.insertAdjacentHTML('afterbegin', newLogHTML);
     }
+
+    refreshStreak();
 }
 
 /**
@@ -349,6 +351,42 @@ function generateLogHTML(amount, time, sipCount) {
             </div>
             <span class="font-mono text-sm text-slate-400 bg-slate-50 px-2 py-1 rounded-md">${time}</span>
         </div>`;
+}
+
+/**
+ * Fetches the latest streak count and updates the badge
+ */
+function refreshStreak() {
+    fetch('actions/get_streak.php')
+    .then(response => response.json())
+    .then(data => {
+        if(data.status === 'success') {
+            const streak = parseInt(data.streak);
+            
+            // 1. Update Number
+            const countEl = document.getElementById('streak-count');
+            if(countEl) countEl.innerText = streak;
+
+            // 2. Update Icon Style (Gray vs Orange Fire)
+            const iconEl = document.getElementById('streak-icon');
+            if(iconEl) {
+                if(streak > 0) {
+                    iconEl.classList.remove('text-slate-300');
+                    iconEl.classList.add('text-orange-500', 'animate-pulse');
+                } else {
+                    iconEl.classList.add('text-slate-300');
+                    iconEl.classList.remove('text-orange-500', 'animate-pulse');
+                }
+            }
+
+            // 3. Update Tooltip Text
+            const tooltipEl = document.getElementById('streak-tooltip');
+            if(tooltipEl) {
+                tooltipEl.innerText = (streak > 0) ? 'Keep it up!' : 'Start a streak today!';
+            }
+        }
+    })
+    .catch(err => console.error("Streak fetch error:", err));
 }
 
 // --- MODAL UTILS ---

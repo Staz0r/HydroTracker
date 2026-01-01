@@ -55,6 +55,12 @@ $stmt->close();
                 <i class="fa-solid fa-check-circle"></i>
                 <span>Settings saved successfully!</span>
             </div>
+
+        <?php elseif (isset($_GET['error']) && $_GET['error'] == 'username_taken'): ?>
+            <div class="mb-6 bg-red-100 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-center gap-3">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>That username is already taken. Please try another.</span>
+            </div>
         <?php endif; ?>
 
         <form action="actions/update_settings.php" method="POST" class="space-y-6">
@@ -65,9 +71,10 @@ $stmt->close();
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-slate-500">
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-wider mb-1">Username</label>
-                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                            <?php echo htmlspecialchars($user['username']); ?>
-                        </div>
+                        <input type="text" name="username" required
+                            value="<?php echo htmlspecialchars($user['username']); ?>"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-700 font-bold focus:outline-none focus:border-blue-500">
+                        <p class="text-[10px] text-slate-400 mt-1">This will update your display name.</p>
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-wider mb-1">Email</label>

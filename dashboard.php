@@ -167,13 +167,13 @@ if ($stmt = $conn->prepare($sql_last)) {
         
         <div class="relative inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-sm border border-orange-100 shadow-sm px-3 py-1.5 rounded-full hover:shadow-md transition-all cursor-default group">
             
-            <i class="fa-solid fa-fire <?php echo ($streak > 0) ? 'text-orange-500 animate-pulse' : 'text-slate-300'; ?> group-hover:scale-110 transition-transform"></i>
+            <i id="streak-icon" class="fa-solid fa-fire <?php echo ($streak > 0) ? 'text-orange-500 animate-pulse' : 'text-slate-300'; ?> group-hover:scale-110 transition-transform"></i>
             
-            <span class="font-bold text-slate-700 text-sm"><?php echo $streak; ?></span>
+            <span id="streak-count" class="font-bold text-slate-700 text-sm"><?php echo $streak; ?></span>
             
             <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Days</span>
 
-            <div class="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-max px-3 py-1 bg-slate-800 text-white text-[10px] rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            <div id="streak-tooltip" class="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-max px-3 py-1 bg-slate-800 text-white text-[10px] rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                 <?php echo ($streak > 0) ? 'Keep it up!' : 'Start a streak today!'; ?>
             </div>
         </div>
