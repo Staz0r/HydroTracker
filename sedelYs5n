@@ -1,0 +1,14 @@
+config/db_connect.php
+configuration/passwords.php
+.env
+
+.DS_Store
+Thumbs.db
+.lh
+
+.vscode/
+error_log
+*.log
+
+# assets/uploads/*
+# !assets/uploads/.gitkeep

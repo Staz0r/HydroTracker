@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function updateDashboardUI(data, dailyGoal) {
     const newTotal = parseInt(data.new_total);
     
-    // 1. Update Numbers
+    // Update Numbers
     const display = document.getElementById('total-drunk-display');
 
     if(display) display.innerText = newTotal;
@@ -88,14 +88,25 @@ function updateDashboardUI(data, dailyGoal) {
             }
         }
     }
+    
+    // Update the Header total intake
+    const headerTotal = document.getElementById('header-total-intake');
+    if (headerTotal) {
+        headerTotal.innerText = newTotal.toLocaleString();
+    }
 
-    // 2. Color Update (Green if goal reached)
+    const headerMsg = document.getElementById('header-status-msg');
+    if (headerMsg && data.status_msg) {
+        headerMsg.innerText = data.status_msg;
+    }
+
+    // Color Update (Green if goal reached)
     if (display && newTotal >= dailyGoal) {
         display.parentElement.classList.remove('text-slate-800');
         display.parentElement.classList.add('text-green-500');
     }
 
-    // 3. Update Water Level (Draining Effect)
+    // Update Water Level (Draining Effect)
     const fill = document.getElementById('water-level-fill');
     if (fill) {
         let percent = ((dailyGoal - newTotal) / dailyGoal) * 100;
@@ -104,7 +115,7 @@ function updateDashboardUI(data, dailyGoal) {
         fill.style.height = percent + '%';
     }
 
-    // 4. NEW: Toggle Congratulations Banner
+    // Toggle Congratulations Banner
     const banner = document.getElementById('goal-success-banner');
     if (banner) {
         if (newTotal >= dailyGoal) {
@@ -191,4 +202,91 @@ function closeManualModal() {
 
 function setAmount(amount) {
     document.getElementById('custom-amount').value = amount;
+}
+
+// Function to handle Next/Prev clicks
+function changeDate(offset) {
+    const currentDateInput = document.getElementById('current-view-date');
+    let current = new Date(currentDateInput.value);
+    
+    // Add/Subtract days
+    current.setDate(current.getDate() + offset);
+    
+    // Format YYYY-MM-DD
+    const newDateStr = current.toISOString().split('T')[0];
+    
+    // Prevent going into future
+    const today = new Date().toISOString().split('T')[0];
+    if (newDateStr > today) return;
+
+    fetchDayData(newDateStr);
+}
+
+// Fetch data from API
+function fetchDayData(dateStr) {
+    fetch(`actions/get_day_data.php?date=${dateStr}`)
+    .then(res => res.json())
+    .then(data => {
+        if(data.status === 'success') {
+            renderDay(data);
+        }
+    });
+}
+
+// Rebuild the DOM
+function renderDay(data) {
+    // 1. Update Hidden Date Tracker
+    document.getElementById('current-view-date').value = data.date;
+
+    // 2. Update Navigation Text/Buttons
+    document.getElementById('nav-date-display').innerText = data.formatted_date;
+    const historyLabel = document.getElementById('nav-history-label');
+    const nextBtn = document.getElementById('nav-next-btn');
+
+    if (data.is_today) {
+        if(historyLabel) historyLabel.classList.add('hidden');
+        if(nextBtn) nextBtn.classList.add('invisible');
+    } else {
+        if(historyLabel) historyLabel.classList.remove('hidden');
+        if(nextBtn) nextBtn.classList.remove('invisible');
+    }
+
+    // 3. Update Stats & Header (Reusing your UI logic)
+    // We mock the structure updateDashboardUI expects
+    updateDashboardUI({
+        new_total: data.total_intake,
+        status_msg: data.status_msg
+    }, data.daily_goal);
+
+    // 4. Rebuild Log List
+    const container = document.getElementById('log-list-container');
+    container.innerHTML = ''; // Clear old logs
+
+    if (data.logs.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-6 text-slate-400 italic">
+                ${data.is_today ? 'No water drank yet today.<br>Take a sip!' : 'No records found for this date.'}
+            </div>
+        `;
+    } else {
+        data.logs.forEach(log => {
+            const iconClass = log.amount_ml >= 250 ? 'fa-glass-water text-blue-500' : 'fa-droplet text-blue-400';
+            const sipBadge = log.sip_count > 1 ? `<span class="text-blue-500 text-sm ml-1">x${log.sip_count}</span>` : '';
+            
+            const html = `
+                <div class="flex justify-between items-center bg-white border-2 border-slate-100 px-4 py-3 rounded-2xl shadow-sm hover:border-blue-200 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid ${iconClass}"></i>
+                        <span class="font-bold text-slate-700">
+                            Drank ${log.amount_ml} ml ${sipBadge}
+                        </span>
+                    </div>
+                    <span class="font-mono text-sm text-slate-400 bg-slate-50 px-2 py-1 rounded-md">
+                        ${log.time}
+                    </span>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        });
+    }
 }
