@@ -112,6 +112,13 @@ $requested_tab = isset($_GET['mode']) && $_GET['mode'] === 'register' ? 'registe
                     LOG IN
                 </button>
             </form>
+            <div class="text-center mt-6">
+                <p class="text-sm text-slate-400">
+                    Don't have an account?
+                    <a onclick="switchTab('register')"
+                        class="font-bold text-blue-600 hover:underline hover:cursor-pointer">Sign up</a>
+                </p>
+            </div>
         </div>
 
         <!-- Register View -->
@@ -193,15 +200,17 @@ $requested_tab = isset($_GET['mode']) && $_GET['mode'] === 'register' ? 'registe
                     class="w-full bg-green-500 text-white font-bold py-3 rounded-xl hover:bg-green-600 transition shadow-lg shadow-green-200">
                     CREATE ACCOUNT
                 </button>
-                <div class="flex justify-end mt-4">
-                    <a onclick="switchTab('login')"
-                        class="text-xs font-bold text-blue-500 hover:underline hover:cursor-pointer">
-                        Already have an account? Log In
-                    </a>
-                </div>
-            </form>
-        </div>
 
+            </form>
+            <div class="text-center mt-6">
+                <p class="text-sm text-slate-400">
+                    Already have an account?
+                    <a onclick="switchTab('login')"
+                        class="font-bold text-blue-600 hover:underline hover:cursor-pointer">Log in</a>
+                </p>
+            </div>
+
+        </div>
     </div>
 
     <?php
