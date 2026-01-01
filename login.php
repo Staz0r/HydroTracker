@@ -1,10 +1,28 @@
 <?php
 require_once 'config/init.php';
 
-// Redirect if already logged in
 if (isset($_SESSION["user_id"])) {
-    header("location: " . BASE_URL . "/dashboard.php");
-    exit;
+    // 1. Get the current user's ID
+    $uid = $_SESSION["user_id"];
+    
+    // 2. Check their daily goal in the database
+    // (We use a direct query here to be 100% sure of their status)
+    $check_sql = "SELECT daily_goal FROM users WHERE user_id = ?";
+    if ($check_stmt = mysqli_prepare($conn, $check_sql)) {
+        mysqli_stmt_bind_param($check_stmt, "i", $uid);
+        mysqli_stmt_execute($check_stmt);
+        mysqli_stmt_bind_result($check_stmt, $db_daily_goal);
+        mysqli_stmt_fetch($check_stmt);
+        mysqli_stmt_close($check_stmt);
+
+        // 3. Route them correctly
+        if ($db_daily_goal > 0) {
+            header("location: " . BASE_URL . "/dashboard.php");
+        } else {
+            header("location: " . BASE_URL . "/personalization.php");
+        }
+        exit;
+    }
 }
 
 $page_title = "Login - HydroTracker";

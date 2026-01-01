@@ -1,5 +1,4 @@
 <?php
-
 require_once '../config/init.php';
 
 // Initialize session arrays if they don't exist
@@ -50,16 +49,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
                 // Check if email exists
                 if (mysqli_stmt_num_rows($stmt) == 1) {
-                    mysqli_stmt_bind_result($stmt, $user_id, $username, $db_email, $hashed_password);
+                    mysqli_stmt_bind_result($stmt, $user_id, $username, $hashed_password, $daily_goal);
                     if (mysqli_stmt_fetch($stmt)) {
                         // Verify Password
                         if (password_verify($password, $hashed_password)) {
-                            // SUCCESS: Start Session & Redirect
+                            // SUCCESS: Start Session
                             $_SESSION["user_id"] = $user_id;
                             $_SESSION["username"] = $username;
                             
-                            $daily_goal = intval($user['daily_goal']);
+                            // Clear temp session data
+                            unset($_SESSION['errors']);
+                            unset($_SESSION['old']);
 
+                            // ROUTING LOGIC (Fixed)
+                            // We use the $daily_goal variable we just fetched from bind_result
                             if ($daily_goal > 0) {
                                 // User has already personalized -> Go to Dashboard
                                 header("Location: ../dashboard.php");
@@ -67,15 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 // Goal is 0 (New User) -> Go to Personalization
                                 header("Location: ../personalization.php");
                             }
-                            
                             exit();
-                            
-                            // Clear temp session data
-                            unset($_SESSION['errors']);
-                            unset($_SESSION['old']);
-
-                            header("location: " . BASE_URL . "/dashboard.php");
-                            exit;
                         } else {
                             $_SESSION['errors']['login_err'] = "Invalid email or password.";
                         }
@@ -186,10 +181,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if (mysqli_stmt_execute($stmt)) {
                 // SUCCESS
+                
+                $new_user_id = mysqli_insert_id($conn); // Get the new ID from DB
+                
+                $_SESSION["user_id"] = $new_user_id;
+                $_SESSION["username"] = $username;
+                
+                // Clear errors
                 unset($_SESSION['errors']);
                 unset($_SESSION['old']);
-                header("location: " . BASE_URL . "/login.php?mode=login&success=1");
+
+                // Redirect DIRECTLY to personalization
+                header("Location: ../personalization.php");
                 exit;
+
             } else {
                 $_SESSION['errors']['login_err'] = "Something went wrong. Please try again.";
             }

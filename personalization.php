@@ -9,6 +9,8 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
+$footer_padding = 'py-16 pb-0';
+
 $stmt = $conn->prepare("SELECT daily_goal FROM users WHERE user_id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -29,6 +31,7 @@ $page_title = "Personalize Plan - HydroTracker";
 <?php include 'includes/head.php'; ?>
 <body class="bg-blue-50 min-h-screen flex items-center justify-center p-6">
 
+    <div class="max-w-2xl mx-auto p-6 mt-6">
     <div class="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden">
         
         <div class="bg-blue-600 p-8 text-center">
@@ -72,18 +75,43 @@ $page_title = "Personalize Plan - HydroTracker";
                 </div>
             </div>
 
-            <div>
-                <label class="block text-slate-700 font-bold mb-2 ml-1">Remind me every</label>
-                <div class="relative">
-                    <select name="reminder" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-700 font-bold focus:outline-none focus:border-blue-500 appearance-none cursor-pointer">
-                        <option value="30">30 Minutes</option>
-                        <option value="60" selected>1 Hour</option>
-                        <option value="120">2 Hours</option>
-                        <option value="180">3 Hours</option>
-                    </select>
-                    <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
-                </div>
-            </div>
+           <div class="relative">
+    <label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Reminder Frequency</label>
+
+    <input type="hidden" name="reminder" id="reminder_input" value="60">
+
+    <button type="button" onclick="toggleDropdown()"
+        class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 pr-10 text-left text-slate-700 font-bold focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all flex items-center justify-between group">
+        
+        <span id="reminder_display">1 Hour</span>
+        
+        <i class="fa-solid fa-chevron-down text-slate-400 group-hover:text-blue-500 transition-colors"></i>
+    </button>
+
+    <div id="reminder_options" 
+        class="hidden absolute z-50 mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden animate-fade-in">
+        
+        <div onclick="selectOption('30', '30 Minutes')" 
+            class="px-4 py-3 hover:bg-blue-50 text-slate-600 hover:text-blue-600 font-medium cursor-pointer transition-colors border-b border-gray-50 last:border-0 flex items-center gap-2">
+            <i class="fa-regular fa-clock text-xs opacity-50"></i> 30 Minutes
+        </div>
+
+        <div onclick="selectOption('60', '1 Hour')" 
+            class="px-4 py-3 hover:bg-blue-50 text-slate-600 hover:text-blue-600 font-medium cursor-pointer transition-colors border-b border-gray-50 last:border-0 flex items-center gap-2">
+            <i class="fa-solid fa-check text-blue-500 text-xs"></i> 1 Hour
+        </div>
+
+        <div onclick="selectOption('120', '2 Hours')" 
+            class="px-4 py-3 hover:bg-blue-50 text-slate-600 hover:text-blue-600 font-medium cursor-pointer transition-colors border-b border-gray-50 last:border-0 flex items-center gap-2">
+            <i class="fa-regular fa-clock text-xs opacity-50"></i> 2 Hours
+        </div>
+        
+        <div onclick="selectOption('180', '3 Hours')" 
+            class="px-4 py-3 hover:bg-blue-50 text-slate-600 hover:text-blue-600 font-medium cursor-pointer transition-colors flex items-center gap-2">
+            <i class="fa-regular fa-clock text-xs opacity-50"></i> 3 Hours
+        </div>
+    </div>
+</div>
 
             <hr class="border-slate-100">
 
@@ -99,6 +127,10 @@ $page_title = "Personalize Plan - HydroTracker";
                 Start Tracking
             </button>
         </form>
+
+    </div>
+
+    <?php include ROOT_PATH . '/includes/footer.php'; ?>
     </div>
 
     <script>
@@ -123,6 +155,32 @@ $page_title = "Personalize Plan - HydroTracker";
 
             document.getElementById('goal-preview').innerText = Math.round(goal);
         }
+        
+    function toggleDropdown() {
+        const menu = document.getElementById('reminder_options');
+        menu.classList.toggle('hidden');
+    }
+
+    function selectOption(value, text) {
+        // 1. Update the Hidden Input (for PHP)
+        document.getElementById('reminder_input').value = value;
+
+        // 2. Update the Visual Text (for User)
+        document.getElementById('reminder_display').innerText = text;
+
+        // 3. Close the Menu
+        document.getElementById('reminder_options').classList.add('hidden');
+    }
+
+    // Optional: Close dropdown if clicking outside
+    document.addEventListener('click', function(e) {
+        const menu = document.getElementById('reminder_options');
+        const button = document.querySelector('button[onclick="toggleDropdown()"]');
+        
+        if (!button.contains(e.target) && !menu.contains(e.target)) {
+            menu.classList.add('hidden');
+        }
+    });
     </script>
 </body>
 </html>

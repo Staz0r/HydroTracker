@@ -1,5 +1,6 @@
 <?php
 require_once '../config/init.php';
+require_once '../includes/hydration_utils.php';
 
 header('Content-Type: application/json');
 
@@ -29,12 +30,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['amount'])) {
             $result = $sum_stmt->get_result()->fetch_assoc();
             $new_total = $result['total_intake'] ?? 0;
             
+            $daily_goal = 2000; // Default fallback
+            $goal_sql = "SELECT daily_goal FROM users WHERE user_id = ?";
+            if ($goal_stmt = $conn->prepare($goal_sql)) {
+                $goal_stmt->bind_param("i", $user_id);
+                $goal_stmt->execute();
+                $goal_stmt->bind_result($db_goal);
+                if($goal_stmt->fetch()) {
+                    $daily_goal = $db_goal;
+                }
+                $goal_stmt->close();
+            }
+            
+            $status_msg = get_hydration_message($new_total, $daily_goal);
+            
             // Send back the new data
             echo json_encode([
                 'status' => 'success', 
                 'new_total' => $new_total,
                 'added_amount' => $amount_ml,
-                'time' => $time
+                'time' => $time,
+                'status_msg' => $status_msg
             ]);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Database error']);
