@@ -1,5 +1,7 @@
 <?php
 require_once 'config/init.php';
+// 1. INCLUDE THE HELPER FUNCTION
+require_once ROOT_PATH . '/includes/hydration_utils.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
@@ -7,13 +9,13 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $page_title = "Leaderboard - HydroTracker";
-$current_page = 'leaderboard.php'; // For nav highlighting
+$current_page = 'leaderboard.php';
 
-// FETCH TOP 10 USERS FOR TODAY
 $today = date('Y-m-d');
 $leaderboard = [];
 
-$sql = "SELECT u.username, u.daily_goal, SUM(w.amount_ml) as total_intake 
+// 2. UPDATE SQL: Added 'u.user_id' so we can calculate streaks
+$sql = "SELECT u.user_id, u.username, u.daily_goal, SUM(w.amount_ml) as total_intake 
         FROM users u 
         JOIN water_logs w ON u.user_id = w.user_id 
         WHERE DATE(w.log_time) = ? 
@@ -52,13 +54,17 @@ if ($stmt = $conn->prepare($sql)) {
                     <?php 
                         $rank = $index + 1;
                         
+                        // 3. CALCULATE STREAK FOR THIS USER
+                        // Since we have the helper, this is one line of code!
+                        $user_streak = calculate_user_streak($conn, $row['user_id'], $row['daily_goal']);
+
                         // Styling for Top 3
-                        $rank_bg = "bg-slate-100 text-slate-500"; // Default
+                        $rank_bg = "bg-slate-100 text-slate-500";
                         if ($rank == 1) $rank_bg = "bg-yellow-100 text-yellow-600 border border-yellow-200";
                         if ($rank == 2) $rank_bg = "bg-gray-100 text-slate-600 border border-slate-300";
                         if ($rank == 3) $rank_bg = "bg-orange-100 text-orange-600 border border-orange-200";
 
-                        // Check if it's the current user (highlight them)
+                        // Check if it's me
                         $is_me = ($row['username'] === $_SESSION['username']);
                         $row_class = $is_me ? "bg-blue-50/50" : "hover:bg-slate-50";
                     ?>
@@ -77,8 +83,16 @@ if ($stmt = $conn->prepare($sql)) {
                             <div>
                                 <h3 class="flex items-center font-bold text-slate-700 text-lg leading-tight">
                                     <?php echo htmlspecialchars($row['username']); ?>
+                                    
                                     <?php if($is_me): ?>
                                         <span class="ml-2 text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full uppercase tracking-wider">You</span>
+                                    <?php endif; ?>
+
+                                    <?php if($user_streak > 0): ?>
+                                        <div class="ml-2 flex items-center gap-1 text-[10px] bg-orange-50 border border-orange-100 text-orange-500 px-2 py-0.5 rounded-full" title="Current Streak">
+                                            <i class="fa-solid fa-fire animate-pulse"></i>
+                                            <span class="font-bold"><?php echo $user_streak; ?></span>
+                                        </div>
                                     <?php endif; ?>
                                 </h3>
                                 
