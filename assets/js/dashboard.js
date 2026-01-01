@@ -56,31 +56,64 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 /**
- * Updates the Dashboard numbers and RESETS the reminder timer
+ * Updates the Dashboard numbers, visuals, and resets the reminder timer
+ * Handles both "New Log" events and "Date Change" updates
  */
 function updateDashboardUI(data, dailyGoal) {
     const newTotal = parseInt(data.new_total);
+    const reminderBanner = document.getElementById('reminder-banner');
     
-    // --- CRITICAL FIX: RESET REMINDER TIMER ---
-    // We only reset the timer if water was actually ADDED (prevents resetting when changing dates)
+    // 1. Reset Reminder Timer (Only if water was just added)
     if (data.added_amount !== undefined) {
         const body = document.querySelector('body');
         
-        // 1. Update the timestamp to NOW
+        // Update timestamp to NOW
         body.dataset.lastSip = Date.now(); 
         console.log("Timer Reset! New Last Sip:", body.dataset.lastSip);
 
-        // 2. Force hide the banner immediately
-        const reminderBanner = document.getElementById('reminder-banner');
-        if(reminderBanner) {
-            reminderBanner.classList.add('hidden');
-        }
+        // Force hide the banner immediately
+        if(reminderBanner) reminderBanner.classList.add('hidden');
     }
 
-    // --- UPDATE NUMBERS ---
+    // 2. Update Total Display & Colors
     const display = document.getElementById('total-drunk-display');
-    if(display) display.innerText = newTotal;
+    const successBanner = document.getElementById('goal-success-banner');
+
+    if (display) display.innerText = newTotal;
+
+    if (newTotal >= dailyGoal) {
+        
+        // A. Update Text Color (GREEN)
+        if (display) {
+            display.parentElement.classList.remove('text-slate-800');
+            display.parentElement.classList.add('text-green-500');
+        }
+
+        // B. Show Success Banner
+        if (successBanner) {
+            successBanner.classList.remove('hidden');
+            // Restart animation
+            successBanner.classList.remove('animate-fade-in');
+            void successBanner.offsetWidth; 
+            successBanner.classList.add('animate-fade-in');
+        }
+
+        // C. Hide Reminder (Since goal is reached)
+        if (reminderBanner) reminderBanner.classList.add('hidden');
+
+    } else {
+        
+        // A. Update Text Color (GRAY)
+        if (display) {
+            display.parentElement.classList.remove('text-green-500');
+            display.parentElement.classList.add('text-slate-800');
+        }
+
+        // B. Hide Success Banner
+        if (successBanner) successBanner.classList.add('hidden');
+    }
     
+    // 3. Update Remaining Amount & Bottle Text
     const left = Math.max(0, dailyGoal - newTotal);
     const leftText = document.getElementById('ml-left-display');
     const leftLabel = document.getElementById('ml-left-label');
@@ -106,14 +139,13 @@ function updateDashboardUI(data, dailyGoal) {
         }
     }
     
-    // --- UPDATE HEADER ---
+    // 4. Update Header & Progress Bar
     const headerTotal = document.getElementById('header-total-intake');
     if (headerTotal) headerTotal.innerText = newTotal.toLocaleString();
 
     const headerMsg = document.getElementById('header-status-msg');
     if (headerMsg && data.status_msg) headerMsg.innerText = data.status_msg;
 
-    // --- PROGRESS BAR ---
     const fill = document.getElementById('water-level-fill');
     if (fill) {
         let percent = ((dailyGoal - newTotal) / dailyGoal) * 100;
@@ -122,42 +154,24 @@ function updateDashboardUI(data, dailyGoal) {
         fill.style.height = percent + '%';
     }
 
-    // --- SUCCESS BANNER ---
-    const successBanner = document.getElementById('goal-success-banner');
-    if (successBanner) {
-        if (newTotal >= dailyGoal) {
-            successBanner.classList.remove('hidden');
-            // Hide reminder if success is shown
-            const reminderBanner = document.getElementById('reminder-banner');
-            if(reminderBanner) reminderBanner.classList.add('hidden');
-        } else {
-            successBanner.classList.add('hidden');
-        }
-    }
-
-    // --- LOG LIST ---
+    // 5. Update Log List (Only if adding a single log)
     const logContainer = document.querySelector('.space-y-3');
     if (logContainer && data.added_amount !== undefined) {
         const emptyState = logContainer.querySelector('.text-center.py-6');
         if (emptyState) emptyState.remove();
 
-        const iconClass = data.added_amount >= 250 ? 'fa-glass-water text-blue-500' : 'fa-droplet text-blue-400';
-        
-        const newLogHTML = `
-            <div class="flex justify-between items-center bg-white border-2 border-slate-100 px-4 py-3 rounded-2xl shadow-sm animate-fade-in">
-                <div class="flex items-center gap-3">
-                    <i class="fa-solid ${iconClass}"></i>
-                    <span class="font-bold text-slate-700">Drank ${data.added_amount} ml</span>
-                </div>
-                <span class="font-mono text-sm text-slate-400 bg-slate-50 px-2 py-1 rounded-md">${data.time || 'Just now'}</span>
-            </div>
-        `;
+        // Use Helper Function to generate HTML
+        const newLogHTML = generateLogHTML(
+            data.added_amount, 
+            data.time || 'Just now', 
+            1 // Default sip count for new logs is 1
+        );
         logContainer.insertAdjacentHTML('afterbegin', newLogHTML);
     }
 }
 
 /**
- * Checks if reminder should be shown
+ * Checks if reminder should be shown based on time and date
  */
 function checkHydrationReminder() {
     const body = document.querySelector('body');
@@ -165,20 +179,16 @@ function checkHydrationReminder() {
     const successBanner = document.getElementById('goal-success-banner');
     const viewDateInput = document.getElementById('current-view-date');
     
-    /* Hide Reminders in these cases:
-       1. Success banner is shown
-       2. Viewing a date other than today
-    */
+    // 1. Hide Reminder if Success Banner is shown
     if (successBanner && !successBanner.classList.contains('hidden')) {
-        reminderBanner.classList.add('hidden');
+        if (reminderBanner) reminderBanner.classList.add('hidden');
         return;
-    } else if (viewDateInput) {
+    } 
+    
+    // 2. Hide Reminder if viewing a past date
+    if (viewDateInput) {
         const viewDate = viewDateInput.value;
-
-        const todayDate = new Date();
-        const todayStr = todayDate.getFullYear() + '-' + 
-                         String(d.getMonth() + 1).padStart(2, '0') + '-' + 
-                         String(d.getDate()).padStart(2, '0');
+        const todayStr = getLocalTodayStr();
         
         if (viewDate !== todayStr) {
             if (reminderBanner) reminderBanner.classList.add('hidden');
@@ -186,30 +196,31 @@ function checkHydrationReminder() {
         }
     }
 
-    /* Show Reminder Logic */
+    // 3. Check Time Limit
     const freqMinutes = parseInt(body.dataset.reminderFreq) || 60; 
     const lastSipTs = parseInt(body.dataset.lastSip) || 0;
     const now = Date.now();
     const timeSinceSip = now - lastSipTs; 
     const limit = freqMinutes * 60 * 1000;
 
-    // If lastSip is 0 (never drank) OR time difference > limit
     if (lastSipTs === 0 || timeSinceSip > limit) {
-        if (reminderBanner.classList.contains('hidden')) {
+        if (reminderBanner && reminderBanner.classList.contains('hidden')) {
             console.log("Showing Reminder! Time since sip:", timeSinceSip);
             reminderBanner.classList.remove('hidden');
         }
     } else {
-        // Otherwise ensure it's hidden
-        reminderBanner.classList.add('hidden');
+        if (reminderBanner) reminderBanner.classList.add('hidden');
     }
 }
 
+/**
+ * Dismisses the reminder and snoozes it for 15 minutes
+ */
 function dismissReminder() {
     const banner = document.getElementById('reminder-banner');
-    banner.classList.add('hidden');
+    if(banner) banner.classList.add('hidden');
     
-    // Snooze for 15 mins (fake a sip 45 mins ago)
+    // Snooze logic: Fake a sip 45 mins ago (assuming 60 min freq)
     const body = document.querySelector('body');
     const freqMinutes = parseInt(body.dataset.reminderFreq) || 60;
     const snoozeTime = 15 * 60 * 1000; 
@@ -218,52 +229,129 @@ function dismissReminder() {
     console.log("Reminder Snoozed.");
 }
 
-// ... Keep your existing changeDate, fetchDayData, renderDay functions ...
+/**
+ * Navigates to a new date based on offset (-1 or +1)
+ */
 function changeDate(offset) {
     const currentDateInput = document.getElementById('current-view-date');
+    
+    // 1. Calculate Target Date
     let current = new Date(currentDateInput.value);
     current.setDate(current.getDate() + offset);
+    
+    // 2. Format to YYYY-MM-DD
     const newDateStr = current.toISOString().split('T')[0];
-    const today = new Date().toISOString().split('T')[0];
-    if (newDateStr > today) return;
+
+    // 3. Block Future Dates
+    const todayStr = getLocalTodayStr();
+    if (newDateStr > todayStr) {
+        console.log("Cannot navigate to future: " + newDateStr);
+        return; 
+    }
+
+    // 4. Fetch Data
     fetchDayData(newDateStr);
 }
+
+/**
+ * Jumps specifically to Today's date
+ */
+function jumpToToday() {
+    const todayStr = getLocalTodayStr();
+    fetchDayData(todayStr);
+}
+
+/**
+ * Fetch logs and data for a specific day via AJAX
+ */
 function fetchDayData(dateStr) {
+    const logContainer = document.getElementById('log-list-container');
+    if(logContainer) logContainer.style.opacity = '0.5';
+
     fetch(`actions/get_day_data.php?date=${dateStr}`)
     .then(res => res.json())
     .then(data => {
-        if(data.status === 'success') renderDay(data);
-    });
+        if(logContainer) logContainer.style.opacity = '1';
+        if(data.status === 'success') {
+            renderDay(data);
+        }
+    })
+    .catch(err => console.error(err));
 }
+
+/**
+ * Renders the entire dashboard state based on JSON data
+ */
 function renderDay(data) {
+    // 1. Update Date Inputs & Labels
     document.getElementById('current-view-date').value = data.date;
     document.getElementById('nav-date-display').innerText = data.formatted_date;
+    
     const historyLabel = document.getElementById('nav-history-label');
     const nextBtn = document.getElementById('nav-next-btn');
+    const returnBanner = document.getElementById('return-to-today-banner');
+
     if (data.is_today) {
         if(historyLabel) historyLabel.classList.add('hidden');
         if(nextBtn) nextBtn.classList.add('invisible');
+        if(returnBanner) returnBanner.classList.add('hidden');
     } else {
         if(historyLabel) historyLabel.classList.remove('hidden');
         if(nextBtn) nextBtn.classList.remove('invisible');
+        if(returnBanner) returnBanner.classList.remove('hidden');
     }
+
+    // 2. Update Bottle, Header & Totals (Reuse existing function)
     updateDashboardUI({
         new_total: data.total_intake,
         status_msg: data.status_msg
     }, data.daily_goal);
     
+    // 3. Render Log List
     const container = document.getElementById('log-list-container');
     container.innerHTML = ''; 
+    
     if (data.logs.length === 0) {
         container.innerHTML = `<div class="text-center py-6 text-slate-400 italic">${data.is_today ? 'No water drank yet today.<br>Take a sip!' : 'No records found for this date.'}</div>`;
     } else {
+        let htmlBuilder = '';
         data.logs.forEach(log => {
-            const iconClass = log.amount_ml >= 250 ? 'fa-glass-water text-blue-500' : 'fa-droplet text-blue-400';
-            const html = `<div class="flex justify-between items-center bg-white border-2 border-slate-100 px-4 py-3 rounded-2xl shadow-sm hover:border-blue-200 transition-colors"><div class="flex items-center gap-3"><i class="fa-solid ${iconClass}"></i><span class="font-bold text-slate-700">Drank ${log.amount_ml} ml</span></div><span class="font-mono text-sm text-slate-400 bg-slate-50 px-2 py-1 rounded-md">${log.time}</span></div>`;
-            container.insertAdjacentHTML('beforeend', html);
+            // Use Helper Function
+            htmlBuilder += generateLogHTML(log.amount_ml, log.time, log.sip_count);
         });
+        container.innerHTML = htmlBuilder;
     }
 }
+
+/**
+ * HELPER: Returns today's date in YYYY-MM-DD format (Local Time)
+ */
+function getLocalTodayStr() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+/**
+ * HELPER: Generates the HTML string for a single log entry
+ */
+function generateLogHTML(amount, time, sipCount) {
+    const iconClass = amount >= 250 ? 'fa-glass-water text-blue-500' : 'fa-droplet text-blue-400';
+    const sipBadge = sipCount > 1 ? `<span class="text-blue-500 text-sm ml-1">x${sipCount}</span>` : '';
+    
+    return `
+        <div class="flex justify-between items-center bg-white border-2 border-slate-100 px-4 py-3 rounded-2xl shadow-sm hover:border-blue-200 transition-colors animate-fade-in">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid ${iconClass}"></i>
+                <span class="font-bold text-slate-700">Drank ${amount} ml ${sipBadge}</span>
+            </div>
+            <span class="font-mono text-sm text-slate-400 bg-slate-50 px-2 py-1 rounded-md">${time}</span>
+        </div>`;
+}
+
+// --- MODAL UTILS ---
 function openManualModal() {
     document.getElementById('manual-modal').classList.remove('hidden');
     setTimeout(() => document.getElementById('custom-amount').focus(), 100);

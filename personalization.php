@@ -81,7 +81,7 @@ $page_title = "Personalize Plan - HydroTracker";
     <input type="hidden" name="reminder" id="reminder_input" value="60">
 
     <button type="button" onclick="toggleDropdown()"
-        class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 pr-10 text-left text-slate-700 font-bold focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all flex items-center justify-between group">
+        class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-left text-slate-700 font-bold focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all flex items-center justify-between group">
         
         <span id="reminder_display">1 Hour</span>
         

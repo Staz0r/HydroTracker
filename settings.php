@@ -32,7 +32,17 @@ $stmt->close();
     <div class="max-w-2xl mx-auto p-6 mt-6">
 
         <div class="flex items-center justify-between mb-8">
-            <h1 class="text-2xl font-bold text-slate-800">Settings</h1>
+
+            <div class="flex items-center gap-4">
+                <a href="dashboard.php"
+                    class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-200 hover:shadow-sm transition-all"
+                    title="Back to Dashboard">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+
+                <h1 class="text-2xl font-bold text-slate-800">Settings</h1>
+            </div>
+
             <a href="actions/logout.php"
                 class="bg-red-50 text-red-500 px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-100 transition">
                 <i class="fa-solid fa-right-from-bracket mr-2"></i>Logout
@@ -96,22 +106,60 @@ $stmt->close();
                     </div>
                 </div>
 
-                <div class="mb-6">
-                    <label class="block text-slate-700 font-bold mb-2">Reminder Frequency</label>
-                    <div class="relative">
-                        <select name="reminder"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-700 font-bold focus:outline-none focus:border-blue-500 appearance-none cursor-pointer">
-                            <option value="30" <?php echo ($user['reminder_frequency'] == 30) ? 'selected' : ''; ?>>30
-                                Minutes</option>
-                            <option value="60" <?php echo ($user['reminder_frequency'] == 60) ? 'selected' : ''; ?>>1 Hour
-                            </option>
-                            <option value="120" <?php echo ($user['reminder_frequency'] == 120) ? 'selected' : ''; ?>>2
-                                Hours</option>
-                            <option value="180" <?php echo ($user['reminder_frequency'] == 180) ? 'selected' : ''; ?>>3
-                                Hours</option>
-                        </select>
-                        <i
-                            class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                <div class="mb-6 relative"> <label class="block text-slate-700 font-bold mb-2">Reminder
+                        Frequency</label>
+
+                    <input type="hidden" name="reminder" id="reminder_input"
+                        value="<?php echo $user['reminder_frequency']; ?>">
+
+                    <button type="button" onclick="toggleDropdown()"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-left text-slate-700 font-bold focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all flex items-center justify-between group">
+
+                        <span id="reminder_display">
+                            <?php
+                            $freq = $user['reminder_frequency'];
+                            if ($freq == 30)
+                                echo "30 Minutes";
+                            elseif ($freq == 60)
+                                echo "1 Hour";
+                            elseif ($freq == 120)
+                                echo "2 Hours";
+                            elseif ($freq == 180)
+                                echo "3 Hours";
+                            else
+                                echo "1 Hour";
+                            ?>
+                        </span>
+
+                        <i id="dropdown-arrow"
+                            class="fa-solid fa-chevron-down text-slate-400 group-hover:text-blue-500 transition-colors"></i>
+                    </button>
+
+                    <div id="reminder_options"
+                        class="hidden absolute z-50 mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden animate-fade-in">
+
+                        <?php
+                        // Helper function to render options with checkmarks
+                        function renderOption($val, $label, $currentVal)
+                        {
+                            $isActive = ($val == $currentVal);
+                            $bgClass = $isActive ? 'bg-blue-50 text-blue-600' : 'text-slate-600 hover:bg-slate-50 hover:text-blue-600';
+                            $icon = $isActive ? '<i class="fa-solid fa-check text-blue-500 text-xs"></i>' : '<i class="fa-regular fa-clock text-xs opacity-50"></i>';
+
+                            echo '
+            <div onclick="selectOption(\'' . $val . '\', \'' . $label . '\')" 
+                class="px-4 py-3 font-medium cursor-pointer transition-colors border-b border-gray-50 last:border-0 flex items-center gap-2 ' . $bgClass . '">
+                ' . $icon . '
+                ' . $label . '
+            </div>';
+                        }
+
+                        renderOption(30, '30 Minutes', $user['reminder_frequency']);
+                        renderOption(60, '1 Hour', $user['reminder_frequency']);
+                        renderOption(120, '2 Hours', $user['reminder_frequency']);
+                        renderOption(180, '3 Hours', $user['reminder_frequency']);
+                        ?>
+
                     </div>
                 </div>
 
@@ -144,6 +192,20 @@ $stmt->close();
             </div>
 
         </form>
+
+        <div class="mt-12 pt-8 border-t-2 border-slate-100 text-center">
+            <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-3">Danger Zone</h3>
+
+            <button onclick="confirmDelete()"
+                class="group flex items-center justify-center gap-2 mx-auto px-6 py-3 rounded-xl bg-red-50 text-red-500 font-bold hover:bg-red-100 transition-colors">
+                <i class="fa-solid fa-trash-can transition-transform group-hover:scale-110"></i>
+                Delete My Account
+            </button>
+
+            <p class="text-xs text-red-300 mt-2">
+                This action is permanent and cannot be undone.
+            </p>
+        </div>
     </div>
 
     <?php include 'includes/footer.php'; ?>
@@ -178,6 +240,42 @@ $stmt->close();
                 goalInput.style.backgroundColor = '#f8fafc'; // back to slate-50
             }, 300);
         }
+        function confirmDelete() {
+            // 1. First Confirmation
+            if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+
+                // 2. Second Confirmation (Safety Check)
+                if (confirm("All your hydration history and data will be permanently lost. Proceed?")) {
+                    // Redirect to the delete action
+                    window.location.href = 'actions/delete_account.php';
+                }
+            }
+        }
+        function toggleDropdown() {
+            const menu = document.getElementById('reminder_options');
+            menu.classList.toggle('hidden');
+        }
+
+        function selectOption(value, text) {
+            // 1. Update the Hidden Input (for PHP)
+            document.getElementById('reminder_input').value = value;
+
+            // 2. Update the Visual Text (for User)
+            document.getElementById('reminder_display').innerText = text;
+
+            // 3. Close the Menu
+            document.getElementById('reminder_options').classList.add('hidden');
+        }
+
+        // Optional: Close dropdown if clicking outside
+        document.addEventListener('click', function (e) {
+            const menu = document.getElementById('reminder_options');
+            const button = document.querySelector('button[onclick="toggleDropdown()"]');
+
+            if (!button.contains(e.target) && !menu.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
     </script>
 </body>
 

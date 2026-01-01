@@ -382,78 +382,82 @@ if ($stmt = $conn->prepare($sql_last)) {
             <!-- Today's Logs -->
             <div class="w-full max-w-sm mx-auto mt-12">
 
-                <div class="flex items-center justify-between mb-6 px-4">
+    <div class="flex items-center justify-between mb-6 px-4">
 
-                    <a href="dashboard.php?date=<?php echo $prev_date; ?>"
-                        class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-500 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition shadow-sm">
-                        <i class="fa-solid fa-chevron-left"></i>
-                    </a>
+        <button onclick="changeDate(-1)"
+            class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-500 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition shadow-sm active:scale-95">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
 
-                    <div class="text-center">
-                        <h3 class="font-hand text-xl text-slate-700 font-bold">
-                            <?php
-                            if ($is_today) {
-                                echo "Today's Log";
-                            } else {
-                                // Shows "Dec 30, 2025"
-                                echo date('M j, Y', strtotime($current_view_date));
-                            }
-                            ?>
-                        </h3>
-                        <?php if (!$is_today): ?>
-                            <span class="text-xs text-slate-400 font-medium uppercase tracking-wider">History View</span>
+        <div class="text-center">
+            <h3 id="nav-date-display" class="font-hand text-xl text-slate-700 font-bold">
+                <?php
+                if ($is_today) {
+                    echo "Today's Log";
+                } else {
+                    echo date('M j, Y', strtotime($current_view_date));
+                }
+                ?>
+            </h3>
+            
+            <span id="nav-history-label" class="text-xs text-slate-400 font-medium uppercase tracking-wider <?php echo ($is_today) ? 'hidden' : ''; ?>">
+                History View
+            </span>
+        </div>
+
+        <button id="nav-next-btn" onclick="changeDate(1)"
+            class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-500 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition shadow-sm active:scale-95 <?php echo ($is_today) ? 'invisible' : ''; ?>">
+            <i class="fa-solid fa-chevron-right"></i>
+        </button>
+
+    </div>
+
+    <div id="log-list-container" class="space-y-3">
+        <?php if (count($today_logs) > 0): ?>
+
+            <?php foreach ($today_logs as $log): ?>
+                <div class="flex justify-between items-center bg-white border-2 border-slate-100 px-4 py-3 rounded-2xl shadow-sm hover:border-blue-200 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <?php if ($log['amount_ml'] >= 250): ?>
+                            <i class="fa-solid fa-glass-water text-blue-500"></i>
+                        <?php else: ?>
+                            <i class="fa-solid fa-droplet text-blue-400"></i>
                         <?php endif; ?>
+
+                        <span class="font-bold text-slate-700">
+                            Drank <?php echo $log['amount_ml']; ?> ml
+                            <?php if ($log['sip_count'] > 1): ?>
+                                <span class="text-blue-500 text-sm ml-1">x<?php echo $log['sip_count']; ?></span>
+                            <?php endif; ?>
+                        </span>
                     </div>
 
-                    <?php if (!$is_today): ?>
-                        <a href="dashboard.php?date=<?php echo $next_date; ?>"
-                            class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-500 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition shadow-sm">
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </a>
-                    <?php else: ?>
-                        <div class="w-10"></div>
-                    <?php endif; ?>
-
+                    <span class="font-mono text-sm text-slate-400 bg-slate-50 px-2 py-1 rounded-md">
+                        <?php echo date('H:i', strtotime($log['log_time'])); ?>
+                    </span>
                 </div>
+            <?php endforeach; ?>
 
-                <div class="space-y-3">
-                    <?php if (count($today_logs) > 0): ?>
-
-                        <?php foreach ($today_logs as $log): ?>
-                            <div
-                                class="flex justify-between items-center bg-white border-2 border-slate-100 px-4 py-3 rounded-2xl shadow-sm hover:border-blue-200 transition-colors">
-                                <div class="flex items-center gap-3">
-                                    <?php if ($log['amount_ml'] >= 250): ?>
-                                        <i class="fa-solid fa-glass-water text-blue-500"></i>
-                                    <?php else: ?>
-                                        <i class="fa-solid fa-droplet text-blue-400"></i>
-                                    <?php endif; ?>
-
-                                    <span class="font-bold text-slate-700">
-                                        Drank <?php echo $log['amount_ml']; ?> ml
-                                        <?php if ($log['sip_count'] > 1): ?>
-                                            <span class="text-blue-500 text-sm ml-1">x<?php echo $log['sip_count']; ?></span>
-                                        <?php endif; ?>
-                                    </span>
-                                </div>
-
-                                <span class="font-mono text-sm text-slate-400 bg-slate-50 px-2 py-1 rounded-md">
-                                    <?php echo date('H:i', strtotime($log['log_time'])); ?>
-                                </span>
-                            </div>
-                        <?php endforeach; ?>
-
-                    <?php else: ?>
-                        <div class="text-center py-6 text-slate-400 italic">
-                            <?php if ($is_today): ?>
-                                No water drank yet today.<br>Take a sip!
-                            <?php else: ?>
-                                No records found for this date.
-                            <?php endif; ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
+        <?php else: ?>
+            <div class="text-center py-6 text-slate-400 italic">
+                <?php if ($is_today): ?>
+                    No water drank yet today.<br>Take a sip!
+                <?php else: ?>
+                    No records found for this date.
+                <?php endif; ?>
             </div>
+        <?php endif; ?>
+    </div>
+    <div id="return-to-today-banner" class="hidden w-full max-w-md mx-auto mt-8 p-6 bg-slate-50 border border-slate-200 rounded-2xl text-center text-slate-500 animate-fade-in">
+    <i class="fa-solid fa-calendar-check text-2xl mb-2 text-slate-400"></i>
+    <p>You are viewing a past log.</p>
+    
+<button onclick="jumpToToday()" class="text-blue-600 font-bold text-sm hover:underline mt-2 inline-block cursor-pointer">
+        Return to Today
+    </button>
+
+    </div>
+</div>
         </div>
 
         <?php include ROOT_PATH . '/includes/footer.php'; ?>
