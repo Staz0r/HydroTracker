@@ -54,22 +54,18 @@ HydroTracker is a PHP + MySQL web app that turns daily water intake into a simpl
 1. Clone or download this repo into your local web root.
 2. Create a MySQL database named `hydrotracker`.
 3. Update credentials in `config/db_connect.php` if needed.
-4. Add the database schema (see placeholder below).
+4. Import the database schema from `database/schema.sql`.
 5. Start Apache + MySQL, then open `http://localhost/hydrotracker`.
 
-## Database Schema (Placeholder)
+## Database Schema
 
-This project currently expects a MySQL schema but no SQL file is included yet.
+The database schema is provided in `database/schema.sql`.
 
-Suggested next step:
+Import it in phpMyAdmin or via CLI:
 
-- Add a file like `database/schema.sql` and paste your table definitions there.
-- Update this section with the exact setup commands once ready.
-
-Expected tables (based on code usage):
-
-- `users`
-- `water_logs`
+```bash
+mysql -u root -p hydrotracker < database/schema.sql
+```
 
 ## Notes
 
