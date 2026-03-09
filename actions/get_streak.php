@@ -1,5 +1,5 @@
 <?php
-require_once ROOT_PATH . '/config/init.php';
+require_once '../config/init.php';
 require_once ROOT_PATH . '/includes/hydration_utils.php'; // Import the helper
 
 header('Content-Type: application/json');

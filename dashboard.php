@@ -147,6 +147,14 @@ if ($stmt = $conn->prepare($sql_last)) {
     }
     $stmt->close();
 }
+
+$preset_1 = $sip_size + $gulp_size;
+$preset_2 = $gulp_size * 2;
+$preset_3 = ($preset_2 < 600) ? 750 : 1000;
+
+$preset_1 = round($preset_1);
+$preset_2 = round($preset_2);
+$preset_3 = round($preset_3);
 ?>
 
 <!DOCTYPE html>
@@ -198,7 +206,7 @@ if ($stmt = $conn->prepare($sql_last)) {
     </div>
 
     <!-- Water bottle -->
-    <div class="flex flex-col items-center justify-center py-8">
+    <div class="flex flex-col items-center justify-center py-8 pt-0">
 
         <div id="reminder-banner"
             class="hidden mb-6 bg-orange-500 text-white p-4 rounded-2xl shadow-lg shadow-orange-200 animate-fade-in flex items-center justify-between">
@@ -512,12 +520,20 @@ if ($stmt = $conn->prepare($sql_last)) {
                     </div>
 
                     <div class="flex justify-center gap-3 mb-8">
-                        <button type="button" onclick="setAmount(150)"
-                            class="px-4 py-2 text-sm font-bold text-slate-500 bg-slate-100 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition active:scale-95">+150</button>
-                        <button type="button" onclick="setAmount(300)"
-                            class="px-4 py-2 text-sm font-bold text-slate-500 bg-slate-100 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition active:scale-95">+300</button>
-                        <button type="button" onclick="setAmount(500)"
-                            class="px-4 py-2 text-sm font-bold text-slate-500 bg-slate-100 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition active:scale-95">+500</button>
+                        <button type="button" onclick="setAmount(<?php echo $preset_1; ?>)"
+                            class="px-4 py-2 text-sm font-bold text-slate-500 bg-slate-100 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition active:scale-95">
+                            +<?php echo $preset_1; ?>
+                        </button>
+
+                        <button type="button" onclick="setAmount(<?php echo $preset_2; ?>)"
+                            class="px-4 py-2 text-sm font-bold text-slate-500 bg-slate-100 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition active:scale-95">
+                            +<?php echo $preset_2; ?>
+                        </button>
+
+                        <button type="button" onclick="setAmount(<?php echo $preset_3; ?>)"
+                            class="px-4 py-2 text-sm font-bold text-slate-500 bg-slate-100 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition active:scale-95">
+                            +<?php echo $preset_3; ?>
+                        </button>
                     </div>
 
                     <div class="space-y-3">

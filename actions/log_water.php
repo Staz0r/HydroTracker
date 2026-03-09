@@ -1,5 +1,8 @@
 <?php
-require_once ROOT_PATH . '/config/init.php';
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+
+require_once '../config/init.php';
 require_once ROOT_PATH . '/includes/hydration_utils.php';
 
 header('Content-Type: application/json');

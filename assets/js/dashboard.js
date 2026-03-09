@@ -39,9 +39,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     updateDashboardUI(data, dailyGoal);
                     
                     // Reset inputs
-                    closeManualModal();
                     const manualInput = document.getElementById('custom-amount');
                     if(manualInput) manualInput.value = '';
+                    
+                    closeManualModal();
                     
                     console.log("Water Logged Successfully!");
                 } else {
@@ -50,6 +51,12 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Error:', error);
+                
+                // FIX: Alert the user so they know it failed
+                alert("Something went wrong. Please check the console or try again.");
+                
+                // FIX: Close the modal so the screen doesn't stay gray
+                closeManualModal();
             });
         });
     });
@@ -155,7 +162,7 @@ function updateDashboardUI(data, dailyGoal) {
     }
 
     // 5. Update Log List (Only if adding a single log)
-    const logContainer = document.querySelector('.space-y-3');
+    const logContainer = document.getElementById('log-list-container')
     if (logContainer && data.added_amount !== undefined) {
         const emptyState = logContainer.querySelector('.text-center.py-6');
         if (emptyState) emptyState.remove();

@@ -17,6 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $activity = $_POST['activity']; 
     $reminder = filter_input(INPUT_POST, 'reminder', FILTER_VALIDATE_INT);
     $daily_goal = filter_input(INPUT_POST, 'daily_goal', FILTER_VALIDATE_INT);
+    $sip_size= filter_input(INPUT_POST, 'sip_size', FILTER_VALIDATE_INT);
+    $gulp_size= filter_input(INPUT_POST, 'gulp_size', FILTER_VALIDATE_INT);
     
     // Check if username is taken by another user
     $sql_check = "SELECT user_id FROM users WHERE username = ? AND user_id != ?";
@@ -40,11 +42,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             weight = ?, 
             activity_level = ?, 
             reminder_frequency = ?, 
-            daily_goal = ? 
+            daily_goal = ?,
+            sip_size = ?,
+            gulp_size = ?
             WHERE user_id = ?";
 
     if ($stmt = $conn->prepare($sql)) {
-        $stmt->bind_param("sisiii", $new_username, $weight, $activity, $reminder, $daily_goal, $user_id);
+        $stmt->bind_param("sisiiiii", $new_username, $weight, $activity, $reminder, $daily_goal, $sip_size, $gulp_size, $user_id);
         
         if ($stmt->execute()) {
             $_SESSION['username'] = $new_username; // Update session username

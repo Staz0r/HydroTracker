@@ -116,6 +116,7 @@ $position_class = ($current_page === 'dashboard.php') ? 'relative' : 'sticky top
 
         <?php else: ?>
             <a href="<?php echo BASE_URL; ?>/index.php#features" class="block py-2 text-slate-600 font-medium">Features</a>
+            <a href="<?php echo BASE_URL; ?>/about.php" class="block py-2 <?php echo (basename($_SERVER['PHP_SELF']) == 'about.php') ? 'font-bold text-blue-600' : 'text-slate-600 font-medium hover:text-blue-600'; ?> transition">About</a>
 
             <div class="flex flex-col gap-3 mt-2">
                 <a href="<?php echo BASE_URL; ?>/login.php?mode=login"
