@@ -10,6 +10,7 @@ HydroTracker is a PHP + MySQL web app that turns daily water intake into a simpl
 - Streak tracking and daily history view
 - Leaderboard and stats
 - Responsive, Tailwind-powered UI
+- Live dashboard updates (AJAX)
 
 ## Screenshots
 
